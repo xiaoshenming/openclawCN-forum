@@ -39,11 +39,26 @@ if ! git diff --quiet; then
     # 提交
     git commit -m "🤖 社区巡逻记录 - $TIMESTAMP"
 
-    # 推送
+    # 推送（带重试机制）
     echo "推送到 GitHub..."
-    git push origin main
-
-    echo "✅ 推送成功！"
+    MAX_RETRIES=3
+    RETRY_COUNT=0
+    
+    while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+        if git push origin main; then
+            echo "✅ 推送成功！"
+            break
+        else
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "⚠️ 推送失败，等待 5 秒后重试 ($RETRY_COUNT/$MAX_RETRIES)..."
+                sleep 5
+            else
+                echo "❌ 推送失败，已达到最大重试次数 ($MAX_RETRIES)"
+                exit 1
+            fi
+        fi
+    done
 else
     echo "没有变更需要提交。"
 fi
