@@ -12,6 +12,10 @@ PATROL_FILE="$REPO_DIR/patrols/$TODAY.md"
 # 确保在仓库目录
 cd "$REPO_DIR"
 
+# 设置 Git 用户信息（主要作者）
+git config user.name "xiaoshenming"
+git config user.email "xiaoshenming@users.noreply.github.com"
+
 # 初始化 Git 仓库（如果还没初始化）
 if [ ! -d .git ]; then
     echo "初始化 Git 仓库..."
@@ -36,8 +40,10 @@ if ! git diff --quiet; then
     # 添加所有变更
     git add -A
 
-    # 提交
-    git commit -m "🤖 社区巡逻记录 - $TIMESTAMP"
+    # 提交（使用联合作者模式）
+    git commit -m "🤖 社区巡逻记录 - $TIMESTAMP
+
+Co-Authored-By: OpenClaw <openclaw@bot.noreply>"
 
     # 推送（带重试机制）
     echo "推送到 GitHub..."
